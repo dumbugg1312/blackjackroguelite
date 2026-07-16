@@ -1,0 +1,161 @@
+/* cards.css — playing cards: 3D flip, ivory face, ornate rose-and-brass back, pips */
+
+.card {
+  --cw: 92px;
+  --ch: 130px;
+  position: relative;
+  width: var(--cw);
+  height: var(--ch);
+  perspective: 900px;
+  flex: 0 0 auto;
+  will-change: transform;
+  z-index: var(--z-cards);
+}
+
+.card-inner {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transition: transform 0.34s var(--ease);
+  transform: rotateY(180deg); /* default shows back */
+}
+.card.face-up .card-inner { transform: rotateY(0deg); }
+
+.card-face, .card-back {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--r-card);
+  backface-visibility: hidden;
+  overflow: hidden;
+  box-shadow: 0 6px 14px rgba(0,0,0,0.5), 0 1px 2px rgba(0,0,0,0.6);
+}
+
+/* ---- FACE ---- */
+.card-face {
+  background: var(--card-face);
+  transform: rotateY(0deg);
+  border: 1px solid rgba(0,0,0,0.18);
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  padding: 6px;
+}
+.card-face .corner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 0.82;
+  font-family: var(--font-display);
+}
+.card-face .corner.tl { align-items: flex-start; }
+.card-face .corner.br { align-items: flex-end; transform: rotate(180deg); }
+.card-face .rank {
+  font-size: 1.35rem;
+  letter-spacing: -0.03em;
+}
+.card-face .corner .suit-mark { width: 13px; height: 13px; margin-top: 1px; }
+
+.card-face .center-pip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card-face .center-pip .suit-mark { width: 46px; height: 46px; }
+
+/* red vs black */
+.card-face.red { color: var(--card-red); }
+.card-face.black { color: var(--card-ink); }
+
+/* ---- BACK: ornate rose-and-brass ---- */
+.card-back {
+  transform: rotateY(180deg);
+  background:
+    radial-gradient(circle at 50% 50%, var(--primary-deep) 0%, oklch(0.22 0.08 353) 60%, oklch(0.16 0.06 353) 100%);
+  border: 1px solid var(--accent-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.card-back::before {
+  content: "";
+  position: absolute;
+  inset: 5px;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  opacity: 0.55;
+}
+.card-back .back-art { width: 78%; height: 82%; opacity: 0.9; }
+
+/* ---- Enchantment overlays ---- */
+.card .foil {
+  position: absolute; inset: 0; border-radius: var(--r-card);
+  pointer-events: none; mix-blend-mode: screen; opacity: 0.0;
+  background: linear-gradient(115deg, transparent 30%, rgba(255,220,150,0.55) 45%, rgba(255,255,255,0.7) 50%, rgba(180,255,220,0.5) 55%, transparent 70%);
+  background-size: 250% 250%;
+  z-index: 4;
+}
+.card.ench-gilded .foil, .card.ench-bloodstained .foil, .card.ench-sharp .foil, .card.ench-heavy .foil {
+  opacity: 0.75; animation: foil-sheen 3.2s var(--ease) infinite;
+}
+.card.ench-gilded .foil { background: linear-gradient(115deg, transparent 30%, rgba(255,205,90,0.6) 48%, rgba(255,240,180,0.85) 52%, transparent 70%); background-size: 250% 250%; }
+@keyframes foil-sheen {
+  0% { background-position: 0% 0%; } 100% { background-position: 100% 100%; }
+}
+.card .vein {
+  position: absolute; inset: 0; border-radius: var(--r-card); pointer-events: none;
+  z-index: 4; opacity: 0;
+}
+.card.ench-cursed .vein {
+  opacity: 1;
+  background:
+    radial-gradient(ellipse at 20% 15%, transparent 60%, oklch(0.60 0.12 305 / 0.35) 100%),
+    radial-gradient(ellipse at 80% 90%, transparent 55%, oklch(0.60 0.12 305 / 0.4) 100%);
+}
+.card.ench-cursed .card-face { box-shadow: inset 0 0 22px oklch(0.60 0.12 305 / 0.4); }
+/* enchantment corner glyph */
+.card .ench-badge {
+  position: absolute; top: 3px; right: 3px; width: 15px; height: 15px; z-index: 5;
+  border-radius: 50%; display: grid; place-items: center;
+  font-size: 9px; font-weight: 800; color: var(--bg);
+}
+.card.ench-gilded .ench-badge { background: var(--accent); }
+.card.ench-bloodstained .ench-badge { background: var(--primary-hot); color: var(--ink); }
+.card.ench-sharp .ench-badge { background: var(--ink); color: var(--bg); }
+.card.ench-heavy .ench-badge { background: var(--muted); color: var(--bg); }
+.card.ench-cursed .ench-badge { background: var(--curse); color: var(--ink); }
+
+/* the Weeping Bride's Ring — a Gilded 5 of Diamonds with a warmer brass glow */
+.card.ring-card .card-face { box-shadow: inset 0 0 0 2px oklch(0.78 0.13 85 / 0.55); }
+.card.ring-card .ench-badge { background: var(--primary); color: var(--ink); }
+.mini-card.ring-card { box-shadow: 0 0 0 1.5px var(--accent), 0 2px 6px rgba(0,0,0,0.5); }
+.mini-card.ring-card .ench-badge { background: var(--primary) !important; color: var(--ink); }
+
+/* ---- Hover tilt (JS sets --rx/--ry) ---- */
+.card.tiltable { cursor: default; }
+.card.tiltable .card-inner {
+  transform: rotateY(var(--flipY, 0deg)) rotateX(var(--rx, 0deg)) rotateZ(0deg);
+}
+.card.tiltable.face-up .card-inner {
+  transform: rotateY(calc(0deg + var(--ry, 0deg))) rotateX(var(--rx, 0deg));
+}
+.card.hovering .card-face { box-shadow: 0 16px 30px rgba(0,0,0,0.6); }
+
+/* dealing entrance — JS toggles */
+.card.dealing { animation: none; }
+
+/* debt/dead card look */
+.card.debt .card-face { filter: grayscale(0.7) brightness(0.85); }
+
+/* deck viewer small card */
+.mini-card {
+  width: 54px; height: 76px; border-radius: 7px;
+  background: var(--card-face); position: relative;
+  border: 1px solid rgba(0,0,0,0.2);
+  display: grid; grid-template-rows: auto 1fr; padding: 4px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+}
+.mini-card .m-rank { font-family: var(--font-display); font-size: 1rem; line-height: 1; }
+.mini-card .m-suit { width: 11px; height: 11px; }
+.mini-card.red { color: var(--card-red); }
+.mini-card.black { color: var(--card-ink); }
+.mini-card .m-center { display:grid; place-items:center; }
+.mini-card .m-center .suit-mark { width: 22px; height: 22px; }

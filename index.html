@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE HOUSE</title>
+<meta name="description" content="A roguelite blackjack dungeon crawler. Descend 21 floors of a condemned casino.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=Rozha+One&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/cards.css">
+<link rel="stylesheet" href="css/table.css">
+<link rel="stylesheet" href="css/screens.css">
+<link rel="stylesheet" href="css/fx.css">
+</head>
+<body>
+<div id="app">
+  <div id="too-small">
+    <div>
+      <h1 class="title-name" style="font-size:2.4rem">The table needs more room.</h1>
+      <p class="muted">THE HOUSE wants at least 960px of width. Widen the window to be dealt in.</p>
+    </div>
+  </div>
+
+  <div class="stage shake-host" id="stage">
+    <!-- FX canvas layers -->
+    <canvas id="fx-bg"></canvas>
+    <div id="vignette"></div>
+
+    <!-- Screen mount points -->
+    <section class="screen" id="screen-title" aria-label="Title"></section>
+    <section class="screen" id="screen-landing" hidden aria-label="Choose a door"></section>
+    <section class="screen" id="screen-fight" hidden aria-label="The table"></section>
+    <section class="screen" id="screen-reward" hidden aria-label="Reward"></section>
+    <section class="screen" id="screen-shop" hidden aria-label="The Cage"></section>
+    <section class="screen" id="screen-shrine" hidden aria-label="A Shrine"></section>
+    <section class="screen" id="screen-parlor" hidden aria-label="A Parlor"></section>
+    <section class="screen" id="screen-lounge" hidden aria-label="The Lounge"></section>
+    <section class="screen" id="screen-pawnbroker" hidden aria-label="The Pawnbroker"></section>
+    <section class="screen" id="screen-death" hidden aria-label="Death"></section>
+    <section class="screen" id="screen-victory" hidden aria-label="Victory"></section>
+
+    <canvas id="fx-fg"></canvas>
+    <div id="float-layer"></div>
+    <div id="flash"></div>
+
+    <!-- overlays -->
+    <div id="story-overlay" hidden aria-live="polite"></div>
+    <div id="boss-intro" hidden></div>
+    <div class="modal-backdrop" id="deckview" hidden></div>
+    <div class="modal-backdrop" id="howto" hidden></div>
+    <div id="toast-layer"></div>
+    <div id="tooltip" hidden></div>
+
+    <!-- transition wipe -->
+    <div id="wipe"></div>
+
+    <!-- a11y live regions: outcomes (assertive) + dealer barks / story text (polite) -->
+    <div id="announce" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
+    <div id="bark-live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+  </div>
+</div>
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

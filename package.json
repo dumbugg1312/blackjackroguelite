@@ -1,0 +1,7 @@
+{
+  "name": "the-house",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "THE HOUSE — static ES-module blackjack roguelite. No build, no deps. (type:module lets Node import the game modules for headless balance sims.)"
+}
