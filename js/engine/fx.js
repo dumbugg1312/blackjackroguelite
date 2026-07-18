@@ -24,6 +24,9 @@ export class FX {
     this.shake = { amp: 0, decay: 0 };
     // hit-stop
     this.hitStopTimer = 0;
+    // camera: idle drift + damage punch-in + lethal push-in
+    this.camera = { punch: 0, push: 0, pushTarget: 0 };
+    this.impactEl = document.getElementById('impact');
     // candle
     this.candle = { intensity: 1, target: 1, x: 0.5, y: 0.42 };
     this.emberAccum = 0;
@@ -77,7 +80,7 @@ export class FX {
   // ---- floating number ----
   floatNumber(x, y, text, cls = 'dmg-enemy', size = 2.4) {
     const el = document.createElement('div');
-    el.className = `float-num ${cls} rise`;
+    el.className = `float-num ${cls}${size >= 3 ? ' big' : ''} rise`;
     el.textContent = text;
     el.style.left = x + 'px';
     el.style.top = y + 'px';
@@ -93,6 +96,36 @@ export class FX {
   // candle re-light dramatic moment (boss phase 2)
   candleFlare() { this.candle.intensity = 2.2; }
 
+  // ---- camera ----
+  // brief punch-in on big hits (0..1)
+  punchIn(strength = 1) {
+    if (this.reduced) return;
+    this.camera.punch = Math.max(this.camera.punch, Math.min(1, strength));
+  }
+  // sustained lean-in while a lethal hand is live
+  setLethal(on) {
+    this.camera.pushTarget = on && !this.reduced ? 1 : 0;
+    this.stage.classList.toggle('lethal', !!on);
+  }
+
+  // ---- impact frame: 2-frame white silhouette (kills / crits) ----
+  impact() {
+    if (this.reduced || !this.impactEl) return;
+    this.impactEl.classList.remove('fire');
+    void this.impactEl.offsetWidth;
+    this.impactEl.classList.add('fire');
+  }
+
+  // ---- chromatic-style grade punch on the stage ----
+  chroma() {
+    if (this.reduced) return;
+    this.stage.classList.remove('chroma-pulse');
+    void this.stage.offsetWidth;
+    this.stage.classList.add('chroma-pulse');
+    clearTimeout(this._chromaT);
+    this._chromaT = setTimeout(() => this.stage.classList.remove('chroma-pulse'), 180);
+  }
+
   update(dtReal) {
     this.time += dtReal;
 
@@ -104,14 +137,29 @@ export class FX {
 
     const dt = dtReal * this.tween.timeScale;
 
-    // shake
+    // camera: decay punch, ease push toward target
+    this.camera.punch = Math.max(0, this.camera.punch - dtReal * 3.2);
+    this.camera.push += (this.camera.pushTarget - this.camera.push) * Math.min(1, dtReal * 1.4);
+
+    // compose camera (idle drift + punch + push) with shake into one stage transform
+    let dx = 0, dy = 0, rot = 0;
     if (this.shake.amp > 0) {
       this.shake.amp = Math.max(0, this.shake.amp - this.shake.decay * dtReal);
       const a = this.shake.amp;
-      const dx = (Math.random() * 2 - 1) * a;
-      const dy = (Math.random() * 2 - 1) * a;
-      const rot = (Math.random() * 2 - 1) * a * 0.12;
-      this.stage.style.transform = `translate(${dx}px,${dy}px) rotate(${rot}deg)`;
+      dx = (Math.random() * 2 - 1) * a;
+      dy = (Math.random() * 2 - 1) * a;
+      rot = (Math.random() * 2 - 1) * a * 0.12;
+    }
+    if (!this.reduced) {
+      const t = this.time;
+      const idleScale = 1.004 + Math.sin(t * 0.22) * 0.004;                       // slow breathing zoom
+      const scale = idleScale + this.camera.punch * 0.028 + this.camera.push * 0.03;
+      dx += Math.sin(t * 0.13) * 3;                                               // idle pan
+      dy += Math.cos(t * 0.1) * 2 - this.camera.push * 6;
+      this.stage.style.transformOrigin = '50% 58%';
+      this.stage.style.transform = `translate(${dx.toFixed(2)}px,${dy.toFixed(2)}px) rotate(${rot.toFixed(3)}deg) scale(${scale.toFixed(4)})`;
+    } else if (dx || dy) {
+      this.stage.style.transform = `translate(${dx}px,${dy}px)`;
     } else if (this.stage.style.transform) {
       this.stage.style.transform = '';
     }

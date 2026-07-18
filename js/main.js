@@ -190,6 +190,16 @@ class App {
     const arm = () => { this.audio.arm(); document.removeEventListener('pointerdown', arm); document.removeEventListener('keydown', arm); };
     document.addEventListener('pointerdown', arm);
     document.addEventListener('keydown', arm);
+    // every interactive surface ticks under the cursor / clicks with weight
+    let lastHover = null;
+    document.addEventListener('pointerover', (e) => {
+      const t = e.target.closest && e.target.closest('button:not(:disabled), .door, .reward-card, .parlor-opt, .shop-item');
+      if (t && t !== lastHover) this.audio.hover();
+      lastHover = t;
+    });
+    document.addEventListener('pointerdown', (e) => {
+      if (e.target.closest && e.target.closest('button:not(:disabled), .door, .reward-card, .parlor-opt')) this.audio.press();
+    });
   }
 
   // ---------- screen router ----------
@@ -199,6 +209,15 @@ class App {
       if (el) el.hidden = (s !== name);
     }
     this.activeScreen = name;
+    // leaving the table: silence the fight's score and tension states
+    if (name !== 'fight') {
+      this.audio.stopMusic();
+      this.audio.setHeartbeat(false);
+      this.fx.setLethal(false);
+      const stage = document.getElementById('stage');
+      stage.classList.remove('lowhp', 'cine', 'hole-drama');
+      if (name === 'title' || name === 'death' || name === 'victory') delete stage.dataset.act;
+    }
   }
 
   wipeTo(cb) {

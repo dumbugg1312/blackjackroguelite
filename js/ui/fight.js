@@ -31,6 +31,11 @@ export function renderFight(app, enemy) {
       <div class="table-oval"></div>
       <div class="table-rail"></div>
       <div class="felt-glow"></div>
+      <div class="candle" aria-hidden="true"><div class="halo"></div><div class="flame"></div><div class="wax"></div></div>
+      <div class="env-frame" aria-hidden="true">
+        ${chandelierSVG('left')}${chandelierSVG('right')}
+        ${chairSVG('left')}${chairSVG('right')}
+      </div>
     </div>
     <div class="hud-top">
       <div class="floor-tag"><span class="act">Act ${actNumber(floor)} — ${actName(floor)}</span>FLOOR ${floor}</div>
@@ -92,7 +97,13 @@ export function renderFight(app, enemy) {
     <div class="ff-badge" id="ff-badge" hidden>▶▶ 4×</div>
     <div class="enemy-speech" id="enemy-speech" aria-hidden="true"></div>
     <div class="outcome-stamp" id="outcome-stamp"></div>
+    <div id="win-banner" aria-hidden="true"></div>
   </div>`;
+
+  // act-based grading + clear any leftover cinematic state from a previous fight
+  const stageEl = document.getElementById('stage');
+  stageEl.dataset.act = actNumber(floor);
+  stageEl.classList.remove('lowhp', 'cine', 'lethal', 'hole-drama');
 
   app.wireTopControls(root);
 
@@ -169,6 +180,30 @@ export function renderFight(app, enemy) {
     renderCharmSlots(charmSlots, run, onCharm, () => charmsEnabled());
     renderMarked();
     renderHeat();
+    updateTension();
+  }
+
+  // ---- tension states: low-HP heartbeat, wounded dealer, lethal camera lean ----
+  function updateTension() {
+    const lowP = c.player.hp > 0 && c.player.hp <= run.maxHp * 0.3;
+    stageEl.classList.toggle('lowhp', lowP && !fightOver);
+    app.audio.setHeartbeat(lowP && !fightOver);
+    const eport = root.querySelector('.combatant.enemy .portrait');
+    if (eport) eport.classList.toggle('wounded', enemy.hp > 0 && enemy.hp <= enemy.maxHp * 0.3);
+    const lethal = !fightOver && (
+      (c.player.hp > 0 && c.player.hp <= Math.round(enemy.atk * 1.25)) ||
+      (enemy.hp > 0 && enemy.hp <= enemy.maxHp * 0.2));
+    app.fx.setLethal(lethal);
+  }
+
+  function jolt(sel) {
+    const p = root.querySelector(sel);
+    if (!p || REDUCED()) return;
+    p.classList.remove('hit'); void p.offsetWidth; p.classList.add('hit');
+  }
+  function hpHurt(bar) {
+    if (REDUCED()) return;
+    bar.el.classList.remove('hurt'); void bar.el.offsetWidth; bar.el.classList.add('hurt');
   }
   function charmsEnabled() { return handActive && !busy && !fightOver && c.state === 'playerTurn' && !(c.stake && c.stake.sealCharms); }
 
@@ -207,6 +242,10 @@ export function renderFight(app, enemy) {
     const active = c._hands[c._activeIdx];
     if (active && active.cards.length) {
       const pd = totalDisplay(active.cards, c.playerTotalOpts());
+      if (playerTotalEl.textContent !== pd.text && !REDUCED()) {
+        playerTotalEl.classList.remove('tick'); void playerTotalEl.offsetWidth; playerTotalEl.classList.add('tick');
+        setTimeout(() => playerTotalEl.classList.remove('tick'), 180);
+      }
       playerTotalEl.textContent = pd.text;
       playerTotalEl.className = 'hand-total' + (pd.bust ? ' bust' : pd.soft ? ' soft' : '') + (active.cards.length === 2 && pd.total === 21 && !active.split ? ' blackjack' : '');
     } else { playerTotalEl.textContent = '—'; playerTotalEl.className = 'hand-total'; }
@@ -331,10 +370,29 @@ export function renderFight(app, enemy) {
           break;
         }
         case 'revealHole': {
-          revealHoleCards();
-          app.audio.cardSlide();
-          updateTotals();
-          await fwait(REDUCED() ? 60 : 220);
+          // the dramatic beat of every hand: the room holds its breath, then the card turns
+          const hole = c.dealer.hand.find((card) => {
+            const el = cardEls.get(card.id);
+            return el && !el.classList.contains('face-up');
+          });
+          if (hole && !REDUCED() && !ffActive) {
+            const el = cardEls.get(hole.id);
+            stageEl.classList.add('hole-drama');
+            if (el) el.classList.add('hole-focus');
+            app.audio.holeNote();
+            await fwait(430);
+            revealHoleCards();
+            app.audio.cardSlide();
+            updateTotals();
+            await fwait(300);
+            stageEl.classList.remove('hole-drama');
+            if (el) el.classList.remove('hole-focus');
+          } else {
+            revealHoleCards();
+            app.audio.cardSlide();
+            updateTotals();
+            await fwait(REDUCED() ? 60 : 220);
+          }
           break;
         }
         case 'bailiffPick': {
@@ -393,15 +451,22 @@ export function renderFight(app, enemy) {
         case 'enemyDamage': {
           const at = centerOf(root.querySelector('.combatant.enemy .portrait'));
           const hot = (ev.heat || 0) >= 3;
-          if (ev.crit) { app.fx.hitStop(0.15, 180); app.fx.flash(true); app.audio.blackjack(); }
+          const big = ev.crit || ev.amount >= 18;
+          if (ev.crit) { app.fx.hitStop(0.15, 180); app.fx.flash(true); app.fx.impact(); app.audio.blackjack(); }
+          else app.fx.hitStop(0.35, Math.min(120, 50 + ev.amount * 3));
+          if (big) { app.fx.chroma(); app.fx.punchIn(0.9); }
+          else app.fx.punchIn(0.4);
           app.fx.doShake(ev.amount);
           app.fx.flash(false);
+          jolt('.combatant.enemy .portrait');
+          hpHurt(enemyHp);
           const cls = 'dmg-enemy' + (hot ? ' ember' : '');
           app.fx.floatNumber(at.x, at.y, '-' + ev.amount, cls, (ev.crit ? 3.6 : 2.4 + Math.min(1.4, ev.amount / 24)) * (hot ? 1.2 : 1));
           app.fx.chipBurstAt(at.x, at.y, Math.min(30, 8 + ev.amount), false);
           app.audio.thud(ev.amount);
           enemyHp.set(enemy.hp, enemy.maxHp);
           enemyHpLabel.innerHTML = `<b>${enemy.hp}</b> / ${enemy.maxHp}`;
+          updateTension();
           maybeLowBark();
           await fwait(ev.crit ? 200 : 120);
           break;
@@ -409,13 +474,19 @@ export function renderFight(app, enemy) {
         case 'playerDamage': {
           if (ev.silent) { playerHp.set(c.player.hp, run.maxHp); playerHpLabel.innerHTML = `<b>${c.player.hp}</b> / ${run.maxHp}`; break; }
           const at = centerOf(root.querySelector('.combatant.player .portrait'));
+          app.fx.hitStop(0.35, Math.min(120, 50 + ev.amount * 3));
+          app.fx.punchIn(ev.amount >= 14 ? 0.9 : 0.4);
+          if (ev.amount >= 14) app.fx.chroma();
           app.fx.doShake(ev.amount);
           app.fx.flash(false);
+          jolt('.combatant.player .portrait');
+          hpHurt(playerHp);
           app.fx.floatNumber(at.x, at.y, '-' + ev.amount, 'dmg-player', 2.4 + Math.min(1.4, ev.amount / 24));
           app.fx.bloodAt(at.x, at.y, Math.min(24, 8 + ev.amount));
           app.audio.thud(ev.amount);
           playerHp.set(c.player.hp, run.maxHp);
           playerHpLabel.innerHTML = `<b>${c.player.hp}</b> / ${run.maxHp}`;
+          updateTension();
           await fwait(140);
           break;
         }
@@ -571,15 +642,28 @@ export function renderFight(app, enemy) {
   }
 
   async function killEnemy() {
-    app.fx.hitStop(0.15, 200);
+    // the signature moment: impact frame, hit-stop, letterbox, the dealer burns out
+    app.fx.impact();
+    app.fx.hitStop(0.12, 260);
+    app.fx.punchIn(1);
     const at = centerOf(root.querySelector('.combatant.enemy .portrait'));
     app.fx.chipBurstAt(at.x, at.y, 30, true);
     app.fx.cardShredsAt(at.x, at.y, 14);
     app.fx.doShake(30);
     app.audio.thud(30);
+    app.fx.setLethal(false);
+    stageEl.classList.add('cine');
     const portrait = root.querySelector('.combatant.enemy .portrait');
-    portrait.style.transition = 'opacity .6s, transform .6s'; portrait.style.opacity = '0.2'; portrait.style.transform = 'scale(.9) rotate(-4deg)';
-    await fwait(600);
+    portrait.classList.add('dying');
+    await fwait(900);
+    if (!REDUCED()) {
+      const b = root.querySelector('#win-banner');
+      b.innerHTML = `<div class="winb-rule"></div><div class="winb-name">${enemy.name} FOLDS</div><div class="winb-sub">The table is yours</div><div class="winb-rule"></div>`;
+      b.classList.add('show');
+      app.audio.win();
+      await fwait(1500);
+    }
+    stageEl.classList.remove('cine');
   }
 
   // ---- Dealer barks (STORY.md §4) ----
@@ -722,6 +806,9 @@ export function renderFight(app, enemy) {
   async function endFight(won) {
     handActive = false; busy = true; fightOver = true;
     setControls();
+    stageEl.classList.remove('lowhp', 'hole-drama');
+    app.audio.setHeartbeat(false);
+    app.fx.setLethal(false);
     app.currentFight = null;
     await wait(450);
     if (won) {
@@ -782,6 +869,7 @@ export function renderFight(app, enemy) {
     if (isBoss) await bossIntro(app, enemy);
     else bark(introLine(enemy), { force: true, hold: 4500 });
     if (isBoss) app.audio.startDrone();
+    else app.audio.startMusic(actNumber(floor) >= 2 ? 2 : 1);
     await startHand();
   })();
 
@@ -789,18 +877,68 @@ export function renderFight(app, enemy) {
 }
 
 function playerSigil() {
-  return `<svg viewBox="0 0 100 100" aria-hidden="true"><rect width="100" height="100" fill="var(--surface)"/>
-    <path d="M50 70 C 28 52 22 40 30 30 C 36 24 46 28 50 36 C 54 28 64 24 70 30 C 78 40 72 52 50 70 Z" fill="var(--primary)"/>
-    <circle cx="50" cy="52" r="4" fill="var(--bg)"/></svg>`;
+  // the one who signed: a white-gloved hand holding its cards, signet catching the candle
+  return `<svg viewBox="0 0 100 100" aria-hidden="true">
+    <defs>
+      <radialGradient id="you-bg" cx="50%" cy="90%" r="90%">
+        <stop offset="0%" stop-color="oklch(0.24 0.07 353)"/>
+        <stop offset="60%" stop-color="oklch(0.12 0.03 353)"/>
+        <stop offset="100%" stop-color="oklch(0.07 0.012 353)"/>
+      </radialGradient>
+    </defs>
+    <rect width="100" height="100" fill="url(#you-bg)"/>
+    <g>
+      <rect x="30" y="18" width="26" height="38" rx="3" fill="oklch(0.94 0.008 85)" transform="rotate(-14 43 37)"/>
+      <path d="M36 26 L41 26 M36 31 L41 31" stroke="var(--card-ink)" stroke-width="1.2" transform="rotate(-14 43 37)"/>
+      <rect x="44" y="14" width="26" height="38" rx="3" fill="oklch(0.96 0.008 85)" transform="rotate(8 57 33)"/>
+      <path d="M50 21 L54 25 L58 21 L56 18 L52 18 Z" fill="var(--card-red)" transform="rotate(8 57 33)"/>
+    </g>
+    <path d="M22 100 L24 78 Q26 62 40 60 L60 60 Q74 62 76 78 L78 100 Z" fill="oklch(0.9 0.012 85)"/>
+    <path d="M40 60 Q36 50 40 44 L46 56 M60 60 Q64 50 60 44 L54 56" fill="oklch(0.9 0.012 85)"/>
+    <path d="M30 78 Q50 86 70 78" stroke="oklch(0.7 0.02 85)" stroke-width="1" fill="none" opacity="0.7"/>
+    <path d="M34 68 Q36 64 40 63 M66 68 Q64 64 60 63" stroke="oklch(0.72 0.02 85)" stroke-width="0.9" fill="none"/>
+    <circle cx="63" cy="72" r="3.4" fill="var(--accent)"/>
+    <circle cx="63" cy="72" r="1.6" fill="var(--primary)"/>
+    <path d="M24 96 L76 96" stroke="oklch(0.55 0.09 85 / 0.5)" stroke-width="1"/>
+  </svg>`;
+}
+
+// blurred chandelier silhouette hanging into the top corners of the hall
+function chandelierSVG(side) {
+  return `<svg class="env-chandelier ${side}" viewBox="0 0 190 170">
+    <path d="M95 0 L95 34" stroke="oklch(0.3 0.04 85)" stroke-width="3"/>
+    <g class="crystal">
+      <path d="M40 60 Q95 30 150 60" stroke="oklch(0.42 0.06 85)" stroke-width="3" fill="none"/>
+      <path d="M30 62 Q95 96 160 62" stroke="oklch(0.36 0.05 85)" stroke-width="2.4" fill="none"/>
+      <ellipse cx="95" cy="42" rx="12" ry="9" fill="oklch(0.4 0.06 85)"/>
+      ${[40, 62, 84, 106, 128, 150].map((x, i) => `
+        <path d="M${x} ${60 + Math.abs(i - 2.5) * -3 + 8} l0 ${14 + (i % 3) * 5}" stroke="oklch(0.5 0.07 85)" stroke-width="1.4"/>
+        <path d="M${x} ${74 + Math.abs(i - 2.5) * -3 + 8 + (i % 3) * 5} l-3 7 l3 8 l3 -8 Z" fill="oklch(0.62 0.08 85)" opacity="0.9"/>`).join('')}
+      ${[52, 95, 138].map((x) => `<ellipse cx="${x}" cy="56" rx="4" ry="6" fill="oklch(0.8 0.12 80)" opacity="0.75"/>`).join('')}
+    </g>
+  </svg>`;
+}
+
+// out-of-focus chair-back looming in the near foreground
+function chairSVG(side) {
+  return `<svg class="env-chair ${side}" viewBox="0 0 300 260">
+    <path d="M40 260 L40 90 Q40 30 150 30 Q260 30 260 90 L260 260 Z" fill="oklch(0.1 0.03 353)"/>
+    <path d="M60 260 L60 100 Q60 50 150 50 Q240 50 240 100 L240 260 Z" fill="oklch(0.14 0.045 353)"/>
+    <path d="M60 140 Q150 120 240 140 M60 190 Q150 170 240 190" stroke="oklch(0.2 0.06 353)" stroke-width="7" fill="none"/>
+    <path d="M40 92 Q40 34 150 34 Q260 34 260 92" stroke="oklch(0.32 0.06 85)" stroke-width="3" fill="none" opacity="0.7"/>
+  </svg>`;
 }
 
 async function bossIntro(app, enemy) {
   const intro = document.getElementById('boss-intro');
+  const stage = document.getElementById('stage');
   const line = introLine(enemy); // authored, verbatim
   intro.innerHTML = `<div class="boss-ribbon"><div class="boss-role">${enemy.def.role}</div><div class="boss-name">${enemy.name}</div></div><div class="boss-voice">"${line}"</div>`;
   intro.hidden = false;
+  stage.classList.add('cine');
   app.audio.bossSting();
   app.announce(`Boss: ${enemy.name}. ${line}`);
   await wait(REDUCED() ? 600 : 3200);
   intro.hidden = true;
+  stage.classList.remove('cine');
 }
