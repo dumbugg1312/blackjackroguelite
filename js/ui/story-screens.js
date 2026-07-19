@@ -64,8 +64,9 @@ export function showStoryBeat(app, { kind = 'interstitial', title = '', lines = 
   overlay.addEventListener('click', onClick);
 
   app.announce(`${title ? title + '. ' : ''}${lines.join(' ')}`);
+  overlay.scrollTop = 0;
   const btn = overlay.querySelector('#story-advance');
-  if (btn) btn.focus();
+  if (btn) btn.focus({ preventScroll: true });
 }
 
 // small motif per beat kind

@@ -35,21 +35,55 @@ export function hasActSeen(run, act) { return ensureArc(run).actSeen.includes(ac
 // ======================================================================
 // 1. OPENING VIGNETTE + ACT INTERSTITIALS  (verbatim, STORY.md §Delivery)
 // ======================================================================
+// Three pages, shown in sequence before floor 1. Page 1 = the world, page 2 = who
+// you are and how you fell, page 3 = the hollow years, tonight, the goal, the stakes.
 export const OPENING = [
-  'You signed the Marker in a warmer decade. Your name, your years, the color of your eyes — the House keeps them all on account.',
-  'Tonight the doors forgot to lock.',
-  'Twenty-one floors down, the House is still dealing.',
-  'Go and be dealt in.',
+  {
+    title: 'The House',
+    lines: [
+      'At the end of every ruined gambler\'s last road, there is a House that does not take money.',
+      'It deals for what you are. Names. Years. Weddings. The color of your eyes.',
+      'Win, and it pays out miracles. Lose, and you walk home lighter.',
+      'Everyone walks home lighter.',
+    ],
+  },
+  {
+    title: 'The Debtor',
+    lines: [
+      'You found it the way everyone does — at the bottom, with nothing left the world upstairs would take.',
+      'The House sat you down anyway. It lent you a stake against yourself. And at first, you won.',
+      'Then the cards turned. Hand after hand it took your name, your years, your wedding, the color of your eyes.',
+      'When nothing else was left, it dealt one final hand — and you signed the Marker. The deed to your soul.',
+    ],
+  },
+  {
+    title: 'Tonight',
+    lines: [
+      'You have lived hollow ever since. Food without taste. Sleep without dreams. A mirror that forgets your face.',
+      'The Marker is why. It sits twenty-one floors down, filed in a drawer with brass corners.',
+      'Tonight, for the first time in all these years, the doors forgot to lock.',
+      'Descend. Beat the dealer on every floor. At the last table, beat the House itself.',
+      'Win back the Marker and walk out whole — or bust, and be filed beside it forever.',
+    ],
+  },
 ];
 
 export const INTERSTITIAL = {
   2: {
     title: 'The Vaults',
-    lines: ['Here the House keeps what it won: names, weddings, summers. Somewhere below, in a drawer with brass corners — yours. It knows you\'re coming. The cards are getting heavier.'],
+    lines: [
+      'Seven dealers down. Fourteen floors between you and the Marker.',
+      'This is where the House keeps what it won: names, weddings, summers.',
+      'Yours waits below, in a drawer with brass corners. It knows you\'re coming. The cards are getting heavier.',
+    ],
   },
   3: {
     title: 'The Pit',
-    lines: ['No music down here. Just the sound the shoe makes when it\'s afraid. The House has stopped sending dealers. Now it sends family.'],
+    lines: [
+      'Fourteen dealers down. Six floors left. Then the House itself, and the Marker in its hand.',
+      'No music this far down. Just the sound the shoe makes when it\'s afraid.',
+      'It has stopped sending dealers. Now it sends family.',
+    ],
   },
 };
 

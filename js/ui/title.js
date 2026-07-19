@@ -47,7 +47,7 @@ export function renderTitle(app) {
       ${flourish()}
       <p class="title-sub">${inherited
         ? 'Under new management. The dealers are dead but the game is not — and now it deals in your name. Win hands to wound them. Lose hands, and the House keeps your blood on account.'
-        : 'A condemned casino, twenty-one floors deep. The dealers are dead but the game is not. Win hands to wound them. Lose hands, and the House keeps your blood on account.'}</p>
+        : 'A casino that deals for what you are, not what you have. It holds your soul twenty-one floors down. Win hands to wound its dealers. Lose, and the House keeps your blood on account.'}</p>
       ${rearranged ? '<p class="title-rearranged muted">The House has rearranged the furniture.</p>' : ''}
       <div class="title-menu">
         <button class="btn btn-primary btn-lg" id="btn-new">New Descent</button>

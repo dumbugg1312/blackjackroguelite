@@ -4,7 +4,11 @@ This document governs all story, dialogue, and copy. PRODUCT.md voice rules stil
 
 ## Premise
 
-Years ago you sat down at the House's table and lost everything a person can sign away: your name, your years, the color of your eyes. It's all held against your **Marker** — your soul as collateral, filed twenty-one floors down. Tonight the doors forgot to lock. You are **the Debtor**, and you have come to win it back or be filed forever.
+**The world.** At the end of every ruined gambler's last road stands the House — a casino that does not take money. It deals for what people *are*: names, years, weddings, the color of eyes. The desperate find it when nothing upstairs will take their stake. Winners are paid in miracles; losers walk home lighter. Its dealers are dead things still working their tables, its floors run twenty-one deep, and the deepest floor holds what it has won.
+
+**You.** You are **the Debtor**. Years ago you hit bottom and found the House. It sat you down, lent you a stake against yourself, and let you win — then the cards turned, and hand after hand it took your name, your years, your wedding, the color of your eyes. When nothing else was left it dealt one final hand, and you signed the **Marker**: the deed to your soul, filed twenty-one floors down in a drawer with brass corners. You have lived hollow ever since — food without taste, sleep without dreams, a mirror that forgets your face.
+
+**Tonight.** For the first time since that night, the doors forgot to lock. Descend, beat the dealer on every floor, beat the House itself at the last table, and win the Marker back — or bust, and be filed beside it forever.
 
 ## Structure
 
@@ -14,15 +18,27 @@ Years ago you sat down at the House's table and lost everything a person can sig
 
 ## Delivery mechanisms (all diegetic, all skippable)
 
-1. **Opening vignette** (one screen after New Descent, before floor 1):
-   > You signed the Marker in a warmer decade. Your name, your years, the color of your eyes — the House keeps them all on account.
-   > Tonight the doors forgot to lock.
-   > Twenty-one floors down, the House is still dealing.
-   > Go and be dealt in.
+1. **Opening prologue** (three screens after New Descent, before floor 1 — each short, each skippable). Page 1 establishes the world, page 2 the protagonist and the fall, page 3 the hollow years, the inciting incident, the goal, and both stakes:
+   - **Page 1 — The House:**
+     > At the end of every ruined gambler's last road, there is a House that does not take money.
+     > It deals for what you are. Names. Years. Weddings. The color of your eyes.
+     > Win, and it pays out miracles. Lose, and you walk home lighter.
+     > Everyone walks home lighter.
+   - **Page 2 — The Debtor:**
+     > You found it the way everyone does — at the bottom, with nothing left the world upstairs would take.
+     > The House sat you down anyway. It lent you a stake against yourself. And at first, you won.
+     > Then the cards turned. Hand after hand it took your name, your years, your wedding, the color of your eyes.
+     > When nothing else was left, it dealt one final hand — and you signed the Marker. The deed to your soul.
+   - **Page 3 — Tonight:**
+     > You have lived hollow ever since. Food without taste. Sleep without dreams. A mirror that forgets your face.
+     > The Marker is why. It sits twenty-one floors down, filed in a drawer with brass corners.
+     > Tonight, for the first time in all these years, the doors forgot to lock.
+     > Descend. Beat the dealer on every floor. At the last table, beat the House itself.
+     > Win back the Marker and walk out whole — or bust, and be filed beside it forever.
 
-2. **Act interstitials** (full-screen beats at floors 8 and 15):
-   - Act II: "The Vaults. Here the House keeps what it won: names, weddings, summers. Somewhere below, in a drawer with brass corners — yours. It knows you're coming. The cards are getting heavier."
-   - Act III: "The Pit. No music down here. Just the sound the shoe makes when it's afraid. The House has stopped sending dealers. Now it sends family."
+2. **Act interstitials** (full-screen beats at floors 8 and 15). Each opens with a progress marker — dealers beaten, floors left to the Marker — so the arc reads as one linear descent:
+   - Act II: "The Vaults. Seven dealers down. Fourteen floors between you and the Marker. This is where the House keeps what it won: names, weddings, summers. Yours waits below, in a drawer with brass corners. It knows you're coming. The cards are getting heavier."
+   - Act III: "The Pit. Fourteen dealers down. Six floors left. Then the House itself, and the Marker in its hand. No music this far down. Just the sound the shoe makes when it's afraid. It has stopped sending dealers. Now it sends family."
 
 3. **The Voice of the House** — one whispered line on each landing (door-choice) screen, drawn from act-specific pools (≥8 lines per act, escalating from courtesy → curiosity → fear).
 

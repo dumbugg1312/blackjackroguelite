@@ -877,29 +877,54 @@ export function renderFight(app, enemy) {
 }
 
 function playerSigil() {
-  // the one who signed: a white-gloved hand holding its cards, signet catching the candle
+  // the one who signed: a white-gloved hand fanning its cards in the candle
+  // pool, signet ring catching the light. Same lighting scaffolding as the
+  // enemy portraits in enemies.js (ids prefixed `you-`).
   return `<svg viewBox="0 0 100 100" aria-hidden="true">
     <defs>
-      <radialGradient id="you-bg" cx="50%" cy="90%" r="90%">
-        <stop offset="0%" stop-color="oklch(0.24 0.07 353)"/>
-        <stop offset="60%" stop-color="oklch(0.12 0.03 353)"/>
-        <stop offset="100%" stop-color="oklch(0.07 0.012 353)"/>
+      <radialGradient id="you-bg" cx="50%" cy="98%" r="98%">
+        <stop offset="0%" stop-color="oklch(0.22 0.06 353)"/>
+        <stop offset="45%" stop-color="oklch(0.12 0.025 353)"/>
+        <stop offset="100%" stop-color="oklch(0.055 0.01 353)"/>
       </radialGradient>
+      <radialGradient id="you-pool" cx="50%" cy="100%" r="62%">
+        <stop offset="0%" stop-color="oklch(0.6 0.14 353)" stop-opacity="0.45"/>
+        <stop offset="100%" stop-color="oklch(0.6 0.14 353)" stop-opacity="0"/>
+      </radialGradient>
+      <radialGradient id="you-vig" cx="50%" cy="55%" r="72%">
+        <stop offset="70%" stop-color="oklch(0 0 0)" stop-opacity="0"/>
+        <stop offset="100%" stop-color="oklch(0 0 0)" stop-opacity="0.6"/>
+      </radialGradient>
+      <linearGradient id="you-cuff" x1="0" y1="1" x2="0" y2="0">
+        <stop offset="0%" stop-color="oklch(0.42 0.12 353)"/>
+        <stop offset="100%" stop-color="oklch(0.14 0.04 353)"/>
+      </linearGradient>
+      <filter id="you-halo" x="-120%" y="-120%" width="340%" height="340%">
+        <feGaussianBlur stdDeviation="3.4"/>
+      </filter>
     </defs>
     <rect width="100" height="100" fill="url(#you-bg)"/>
+    <ellipse cx="50" cy="103" rx="52" ry="30" fill="url(#you-pool)"/>
     <g>
-      <rect x="30" y="18" width="26" height="38" rx="3" fill="oklch(0.94 0.008 85)" transform="rotate(-14 43 37)"/>
-      <path d="M36 26 L41 26 M36 31 L41 31" stroke="var(--card-ink)" stroke-width="1.2" transform="rotate(-14 43 37)"/>
-      <rect x="44" y="14" width="26" height="38" rx="3" fill="oklch(0.96 0.008 85)" transform="rotate(8 57 33)"/>
-      <path d="M50 21 L54 25 L58 21 L56 18 L52 18 Z" fill="var(--card-red)" transform="rotate(8 57 33)"/>
+      <rect x="26" y="24" width="24" height="34" rx="2.6" fill="oklch(0.84 0.015 85)" transform="rotate(-18 38 41)"/>
+      <rect x="38" y="19" width="24" height="34" rx="2.6" fill="oklch(0.9 0.012 85)" transform="rotate(-4 50 36)"/>
+      <rect x="50" y="19" width="24" height="34" rx="2.6" fill="oklch(0.96 0.008 85)" transform="rotate(11 62 36)"/>
+      <g transform="rotate(11 62 36)">
+        <text x="54.5" y="28" font-family="Rozha One, serif" font-size="6.5" fill="oklch(0.5 0.17 15)">A</text>
+        <path d="M62 34.5 Q59 31.5 56.8 34 Q55.4 36 57.4 38 L62 42 L66.6 38 Q68.6 36 67.2 34 Q65 31.5 62 34.5 Z" fill="oklch(0.5 0.17 15)"/>
+      </g>
     </g>
-    <path d="M22 100 L24 78 Q26 62 40 60 L60 60 Q74 62 76 78 L78 100 Z" fill="oklch(0.9 0.012 85)"/>
-    <path d="M40 60 Q36 50 40 44 L46 56 M60 60 Q64 50 60 44 L54 56" fill="oklch(0.9 0.012 85)"/>
-    <path d="M30 78 Q50 86 70 78" stroke="oklch(0.7 0.02 85)" stroke-width="1" fill="none" opacity="0.7"/>
-    <path d="M34 68 Q36 64 40 63 M66 68 Q64 64 60 63" stroke="oklch(0.72 0.02 85)" stroke-width="0.9" fill="none"/>
-    <circle cx="63" cy="72" r="3.4" fill="var(--accent)"/>
-    <circle cx="63" cy="72" r="1.6" fill="var(--primary)"/>
-    <path d="M24 96 L76 96" stroke="oklch(0.55 0.09 85 / 0.5)" stroke-width="1"/>
+    <path d="M30 100 Q29 80 38 70 Q44 64 52 64 Q62 64 66 72 Q70 80 69 100 Z" fill="oklch(0.9 0.012 85)"/>
+    <path d="M58 70 Q62 62 60 54 Q65 59 65 66 Q65 72 60 74 Z" fill="oklch(0.94 0.01 85)"/>
+    <path d="M40 72 Q40 84 39 94 M47 68.5 Q47 82 46.5 94 M54 68.5 Q54.5 82 54 94" stroke="oklch(0.68 0.02 85)" stroke-width="0.7" fill="none" opacity="0.8"/>
+    <circle cx="47" cy="76" r="2.4" fill="oklch(0.78 0.13 85)" filter="url(#you-halo)" opacity="0.8"/>
+    <path d="M44.3 76.5 Q47 74.8 49.7 76.5" stroke="oklch(0.78 0.13 85)" stroke-width="2" fill="none"/>
+    <circle cx="47" cy="76" r="1.5" fill="oklch(0.82 0.13 85)"/>
+    <circle cx="47" cy="76" r="0.8" fill="oklch(0.5 0.16 353)"/>
+    <path d="M27 100 Q27 92 31 88 L68 88 Q71 92 71 100 Z" fill="url(#you-cuff)"/>
+    <path d="M31 88 L68 88" stroke="oklch(0.6 0.1 85)" stroke-width="0.8" opacity="0.8"/>
+    <circle cx="64" cy="93" r="1.2" fill="oklch(0.75 0.12 85)"/>
+    <rect width="100" height="100" fill="url(#you-vig)"/>
   </svg>`;
 }
 

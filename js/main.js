@@ -379,7 +379,8 @@ class App {
     const a = ensureArc(run);
     let beat = null;
     if (upcoming === 1 && !a.openingSeen) {
-      beat = { kind: 'opening', title: '', lines: OPENING, cta: 'Be dealt in', mark: () => { a.openingSeen = true; } };
+      this._playOpening(0);
+      return;
     } else if (upcoming === 8 && !hasActSeen(run, 2)) {
       beat = { kind: 'interstitial', title: INTERSTITIAL[2].title, lines: INTERSTITIAL[2].lines, cta: 'Descend', mark: () => markActSeen(run, 2) };
     } else if (upcoming === 15 && !hasActSeen(run, 3)) {
@@ -393,6 +394,26 @@ class App {
       kind: beat.kind, title: beat.title, lines: beat.lines, cta: beat.cta,
       onDone: () => {
         beat.mark();
+        run.save();
+        const first = document.querySelector('#screen-landing .door');
+        if (first) first.focus();
+      },
+    });
+  }
+
+  // The opening prologue: OPENING pages shown in sequence (world → you → tonight).
+  // openingSeen is only marked after the last page, so a mid-prologue reload replays it.
+  _playOpening(i) {
+    const run = this.run;
+    const a = ensureArc(run);
+    const page = OPENING[i];
+    const last = i >= OPENING.length - 1;
+    showStoryBeat(this, {
+      kind: 'opening', title: page.title, lines: page.lines,
+      cta: last ? 'Be dealt in' : 'Continue',
+      onDone: () => {
+        if (!last) { this._playOpening(i + 1); return; }
+        a.openingSeen = true;
         run.save();
         const first = document.querySelector('#screen-landing .door');
         if (first) first.focus();
