@@ -386,3 +386,25 @@
   .story-line { animation: none !important; opacity: 1 !important; transform: none !important; }
   .story-advance { animation: none; }
 }
+
+/* ---- The Pawnbroker / Standing Ledger (meta perks) ---- */
+/* Heirlooms + 6 perk cards + footer must fit the stage: tighter spacing, scroll fallback. */
+#screen-pawnbroker .centered {
+  gap: var(--s3); padding: var(--s4) var(--s6);
+  justify-content: safe center; overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: var(--line) transparent;
+}
+#screen-pawnbroker .landing-title { font-size: 1.6rem; margin-bottom: 0; }
+#screen-pawnbroker .reward-card { min-height: 0; padding: var(--s3); }
+.ledger-head {
+  display: flex; align-items: center; gap: var(--s4);
+  margin-top: var(--s2); border-top: 1px solid var(--line); padding-top: var(--s3);
+  width: 100%; max-width: 1120px; justify-content: center;
+}
+.ledger-item.owned { border-color: var(--accent-deep); opacity: 0.85; }
+.ledger-pips { display: inline-flex; gap: 3px; margin-left: 4px; vertical-align: middle; }
+.ledger-pip {
+  width: 7px; height: 7px; border-radius: 50%;
+  border: 1px solid var(--accent-deep); display: inline-block;
+}
+.ledger-pip.lit { background: var(--accent); border-color: var(--accent); }

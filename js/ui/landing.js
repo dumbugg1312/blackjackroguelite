@@ -1,6 +1,18 @@
 // landing.js — the door-choice screen between rooms.
 
 import { actName, actNumber } from '../game/map.js';
+import { bindTooltip } from './tooltip.js';
+
+// What each door type actually does, mechanically — shown on hover/focus.
+const DOOR_HELP = {
+  table: 'A dealer\'s table. Beat the dealer at blackjack to clear the floor — pays chips and a reward.',
+  elite: 'A high-stakes table. A crueler dealer with a harsher rule — but clearing it always offers a relic.',
+  boss: 'A boss table. It breaks the rules of blackjack. Clearing it opens the next act.',
+  shop: 'The Cage. Spend chips on relics, charms, enchantments, card removal, and a mystery card.',
+  shrine: 'A shrine. A strange bargain, or someone with a request. Choices are remembered.',
+  parlor: 'A parlor. Rest here: heal, remove a card from your shoe, or enchant one.',
+  lounge: 'The Lounge. Choose one song — a buff that follows you for the next several fights.',
+};
 
 export function renderLanding(app) {
   const root = document.getElementById('screen-landing');
@@ -34,8 +46,9 @@ export function renderLanding(app) {
   app.wireTopControls(root);
 
   root.querySelectorAll('.door').forEach((node) => {
+    const d = doors[+node.dataset.i];
+    bindTooltip(node, () => ({ title: d.label, body: DOOR_HELP[d.type] || '', flavor: d.whisper, tone: d.type === 'boss' || d.type === 'elite' ? 'rose' : 'brass' }));
     node.addEventListener('click', () => {
-      const d = doors[+node.dataset.i];
       app.audio.cardSlide();
       app.enterDoor(d);
     });

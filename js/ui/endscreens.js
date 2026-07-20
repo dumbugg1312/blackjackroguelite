@@ -26,6 +26,7 @@ export function renderDeath(app, enemy, cause) {
       <dt>Hands won</dt><dd>${s.handsWon} / ${s.handsPlayed}</dd>
       <dt>Biggest hand</dt><dd>${s.biggestHand}</dd>
     </dl>
+    <p class="brass" style="margin:4px 0 0">The Pawnbroker credits your account: +${life.creditEarned} · balance ${life.credit}</p>
     <div class="seed-line">seed ${run.seed} · lifetime: ${life.wins} escapes${life.inheritances ? `, ${life.inheritances} inheritances` : ''} in ${life.runs} descents · deepest Floor ${life.bestFloor} · ${life.handsWon} hands won · biggest hit ${life.biggestHit}</div>
     <button class="btn btn-primary btn-lg" id="d-again">New Descent</button>
   </div>`;
@@ -95,6 +96,7 @@ export function renderEnding(app, endingId) {
         <dt>Biggest hand</dt><dd>${s.biggestHand}</dd>
         <dt>Relics carried</dt><dd>${run.relics.length}</dd>
       </dl>
+      <p class="brass" style="margin:4px 0 0">The Pawnbroker credits your account: +${life.creditEarned} · balance ${life.credit}</p>
       <div class="seed-line">seed ${run.seed} · lifetime: ${life.wins} escapes · ${life.inheritances} inheritances · ${life.runs} descents · biggest hit ${life.biggestHit}</div>
       <button class="btn btn-brass btn-lg" id="v-again">Descend Again</button>
     </div>`;

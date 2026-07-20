@@ -168,24 +168,24 @@ export const EVENTS = [
   // SCRIPTED ENCOUNTERS — arc-gated (story:true). See story.js / SPEC2 §B.
   // ==================================================================
   {
-    id: 'concierge_1', name: 'The Concierge', story: true,
+    id: 'concierge_1', name: 'Elias Vann', story: true,
     gate: (run) => (run.arc.conciergeStage || 0) === 0,
-    body: 'A man in a brass-buttoned coat keeps this floor. He has your face, almost, worn thin by years. You reach for a chip to tip him.',
+    body: 'A man in a brass-buttoned bell captain\'s coat keeps this floor, name tag gone green with age: E. VANN. He hands you a towel you did not ask for. You reach for a chip to tip him.',
     choices: [
       {
         label: 'Offer him a chip', hint: 'A courtesy.',
-        run: async (api) => { api.setConciergeStage(1); api.result('He folds your hand shut around it, gently. "Keep your coin. Down here it only buys you deeper."'); },
+        run: async (api) => { api.setConciergeStage(1); api.result('He folds your hand shut around it, gently. "Keep your coin, Mr. Creel. Down here it only buys you deeper."'); },
       },
       {
         label: 'Ask who he is', hint: 'Just talk.',
-        run: async (api) => { api.setConciergeStage(1); api.result('"I keep the doors," he says. "I was a guest once, like you. Mind the chair." He will not say more.'); },
+        run: async (api) => { api.setConciergeStage(1); api.result('"Vann," he says. "Bell captain. Since 1931 — in a manner of speaking. I was a guest once, like you. Mind the chair." He will not say more.'); },
       },
     ],
   },
   {
-    id: 'concierge_2', name: 'The Concierge', story: true, order: 2,
+    id: 'concierge_2', name: 'Elias Vann', story: true, order: 2,
     gate: (run) => (run.arc.conciergeStage || 0) === 1 && (run.floor + 1) >= 8,
-    body: 'The Concierge slides open a long drawer with brass corners. Inside, a card with your name — and under it, three trinkets of the dead. "One is yours," he says. "The House owes you that much. Choose before it changes its mind."',
+    body: 'Vann slides open a long drawer with brass corners, labeled CREEL, HARLAN. Inside, a card with your signature — and under it, three trinkets of the dead. "One is yours," he says. "The House owes your family that much. Choose before it changes its mind."',
     choices: [
       {
         label: 'Take one', hint: 'A free peek — choose 1 of 3 relics.',
@@ -198,9 +198,9 @@ export const EVENTS = [
     ],
   },
   {
-    id: 'bride_1', name: 'The Weeping Bride', story: true,
+    id: 'bride_1', name: 'Constance Perle', story: true,
     gate: (run) => (run.arc.weepingBride || 0) === 0,
-    body: 'A bride sits at a dead table, veil grey with dust, a hand of cards she will not turn. "I had a ring," she says, not looking up. "Diamonds. Find it for me. It will be in the shoe by now — it always finds the shoe."',
+    body: 'A bride sits at a dead table in a scorched ballroom, veil grey with thirty years of dust, a hand of cards she will not turn. "June the fourteenth, 1927," she says, not looking up. "My wedding night. I had a ring — diamonds. Find it for me. It will be in the shoe by now. Everything of mine finds the shoe."',
     choices: [
       {
         label: 'Promise to find it', hint: 'The Ring — a Gilded 5♦ — enters your shoe.',
@@ -213,9 +213,9 @@ export const EVENTS = [
     ],
   },
   {
-    id: 'bride_2', name: 'The Weeping Bride', story: true, order: 4,
+    id: 'bride_2', name: 'Constance Perle', story: true, order: 4,
     gate: (run) => (run.arc.weepingBride || 0) === 1 && run.hasRingCard(),
-    body: 'The bride is standing now, veil thrown back on a face you cannot quite hold. "You carry it," she says. "I feel it in the shoe. Give it back — or keep it, and let it remember me for you."',
+    body: 'The bride is standing now, veil thrown back on a face you cannot quite hold — the way you cannot hold Ada\'s. "You carry it," she says. "I feel it in the shoe. Give it back — or keep it, and let it remember me for you."',
     choices: [
       {
         label: 'Return the Ring', hint: 'Remove it. Gain a rare relic and 40 chips.',

@@ -46,15 +46,15 @@ export function renderTitle(app) {
       <h1 class="title-name"><span class="the">THE</span>HOUSE</h1>
       ${flourish()}
       <p class="title-sub">${inherited
-        ? 'Under new management. The dealers are dead but the game is not — and now it deals in your name. Win hands to wound them. Lose hands, and the House keeps your blood on account.'
-        : 'A casino that deals for what you are, not what you have. It holds your soul twenty-one floors down. Win hands to wound its dealers. Lose, and the House keeps your blood on account.'}</p>
+        ? 'Biloxi, 1957. The Magnolia Hotel is under new management — yours. The dealers are dead but the game is not, and now it deals in your name. Somewhere on Point Cadet, a ruined man is walking toward the doors.'
+        : 'Biloxi, 1957. The Magnolia Hotel burned thirty years ago, and its doors are still open. It holds your soul twenty-one floors down. Win hands to wound its dealers. Lose, and the House keeps your blood on account.'}</p>
       ${rearranged ? '<p class="title-rearranged muted">The House has rearranged the furniture.</p>' : ''}
       <div class="title-menu">
         <button class="btn btn-primary btn-lg" id="btn-new">New Descent</button>
         <button class="btn" id="btn-continue" ${hasSave ? '' : 'disabled'}>Continue${hasSave ? '' : ' — no run on account'}</button>
         <button class="btn btn-ghost btn-sm" id="btn-howto">How to Play</button>
       </div>
-      <div class="title-stats tabular">Descents: ${stats.runs} · Escapes: ${stats.wins}${stats.inheritances ? ` · Inheritances: ${stats.inheritances}` : ''} · Deepest: Floor ${stats.bestFloor}</div>
+      <div class="title-stats tabular">Descents: ${stats.runs} · Escapes: ${stats.wins}${stats.inheritances ? ` · Inheritances: ${stats.inheritances}` : ''} · Deepest: Floor ${stats.bestFloor}${stats.credit ? ` · Credit: ${stats.credit}` : ''}</div>
       <div class="title-foot">
         <button class="btn btn-ghost btn-sm" id="btn-mute">${app.audio.muted ? 'Sound: Off' : 'Sound: On'}</button>
         <span class="seed-entry">seed <input id="seed-input" type="text" maxlength="16" placeholder="random" aria-label="Run seed" value="${(new URLSearchParams(location.search).get('seed') || '').replace(/[^A-Za-z0-9]/g, '').slice(0, 16)}"></span>

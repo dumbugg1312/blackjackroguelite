@@ -166,6 +166,9 @@ class App {
         };
       },
       lifetime() { return Run.loadStats(); },
+      // ----- meta (Pawnbroker credit / Standing Ledger perks) -----
+      addCredit(n) { const s = Run.loadStats(); s.credit = Math.max(0, (s.credit || 0) + (n | 0)); Run.saveStats(s); return s.credit; },
+      setDiedOnce(v = true) { const s = Run.loadStats(); s.diedOnce = !!v; Run.saveStats(s); return s.diedOnce; },
     };
     window.HOUSE = H;
     console.log('[HOUSE debug] window.HOUSE installed. Methods:', Object.keys(H).filter((k) => typeof H[k] === 'function').join(', '));
@@ -468,8 +471,9 @@ class App {
     run.chips += clear;
     this._lastClearChips = clear;
 
-    // §C — automatic +6 heal after every cleared fight; Lounge songs tick down a fight.
-    run.heal(6);
+    // §C — automatic +6 heal after every cleared fight (plus Needle & Thread perk ranks);
+    // Lounge songs tick down a fight.
+    run.heal(run.postFightHeal());
     run.tickSongs();
     run.heat = 0; run.activeStake = null;
     this.toast('You bind your wounds. The House disapproves.');

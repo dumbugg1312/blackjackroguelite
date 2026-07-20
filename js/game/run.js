@@ -3,6 +3,7 @@
 import { RNG, randomSeed } from '../engine/rng.js';
 import { makeStandardDeck, makeCard, makeDebtCard, ensureCardId } from './cards.js';
 import { RELIC_BY_ID } from './relics.js';
+import { loadPerks, perkRank, creditForRun } from './perks.js';
 
 const SAVE_KEY = 'house.save.v1';
 const STATS_KEY = 'house.stats.v1';
@@ -39,6 +40,13 @@ export class Run {
     // ringKept: player kept & upgraded the Ring; whisperSeen: no-repeat whisper indices.
     this.arc = { actSeen: [], weepingBride: 0, conciergeStage: 0, openingSeen: false, confessionSeen: false, ringId: null, ringKept: false, whisperSeen: { 1: [], 2: [], 3: [] } };
     this.heirloom = null;       // Pawnbroker heirloom relic chosen for this descent (§E)
+
+    // Standing Ledger perks (persistent, bought with Credit at the Pawnbroker).
+    // Flat start-of-run effects apply here; ongoing effects read perkRank at their site.
+    const perks = loadPerks();
+    const fat = perkRank('candlefat', perks);
+    if (fat) { this.maxHp += fat * 5; this.hp = this.maxHp; }
+    this.chips += perkRank('walking_in_money', perks) * 25;
   }
 
   // ---- flags / relics ----
@@ -66,6 +74,7 @@ export class Run {
       const r = RELIC_BY_ID[id];
       if (r && r.flags && r.flags.shopMult) m *= r.flags.shopMult;
     }
+    m *= 1 - 0.05 * perkRank('crooked_deal'); // Standing Ledger perk
     return m;
   }
 
@@ -111,7 +120,10 @@ export class Run {
   damage(n) { this.hp = Math.max(0, this.hp - n); }
 
   // ---- Heat (A1) ----
-  heatCap() { return this.hasFlag('heatCap') || 5; }
+  heatCap() { return (this.hasFlag('heatCap') || 5) + (perkRank('old_flame') ? 1 : 0); }
+
+  // Post-fight heal amount (§C base 6, plus Needle & Thread ranks).
+  postFightHeal() { return 6 + perkRank('needle_thread') * 2; }
 
   // ---- Lounge songs (§C) ----
   hasSong(id) { return this.songs.some((s) => s.id === id && s.fights > 0); }
@@ -195,9 +207,10 @@ export class Run {
 
   // ---- persistent lifetime stats ----
   // Fields: runs, wins (Escapes), inheritances (Chair endings), bestFloor (deepest),
-  // handsWon (lifetime total), biggestHit (biggest single blow), diedOnce (Pawnbroker unlock).
+  // handsWon (lifetime total), biggestHit (biggest single blow), diedOnce (Pawnbroker unlock),
+  // credit (Pawnbroker meta-currency, earned at run end, spent on Standing Ledger perks).
   static loadStats() {
-    const base = { runs: 0, wins: 0, inheritances: 0, bestFloor: 0, handsWon: 0, biggestHit: 0, diedOnce: false };
+    const base = { runs: 0, wins: 0, inheritances: 0, bestFloor: 0, handsWon: 0, biggestHit: 0, diedOnce: false, credit: 0 };
     try { return Object.assign(base, JSON.parse(localStorage.getItem(STATS_KEY)) || {}); }
     catch (e) { return base; }
   }
@@ -218,7 +231,20 @@ export class Run {
       s.handsWon += run.stats.handsWon || 0;
       if ((run.stats.biggestHand || 0) > s.biggestHit) s.biggestHit = run.stats.biggestHand;
     }
+    // The Pawnbroker credits your account for the run — deeper and better-played pays more.
+    const earned = creditForRun(won, floorReached, run);
+    s.credit = (s.credit || 0) + earned;
     Run.saveStats(s);
-    return s;
+    // creditEarned rides on the returned object only (never persisted) for end screens.
+    return Object.assign({}, s, { creditEarned: earned });
+  }
+
+  // Spend Pawnbroker credit; returns the new balance or null if insufficient.
+  static spendCredit(n) {
+    const s = Run.loadStats();
+    if ((s.credit || 0) < n) return null;
+    s.credit -= n;
+    Run.saveStats(s);
+    return s.credit;
   }
 }

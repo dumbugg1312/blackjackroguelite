@@ -136,6 +136,19 @@ export function renderFight(app, enemy) {
   const heatRow = root.querySelector('#heat-row');
   const ffBadge = root.querySelector('#ff-badge');
 
+  // Hover/focus explanations for every table control (real tooltips, not title attrs).
+  bindTooltip(btnHit, () => ({ title: 'Hit (H)', body: `Draw one card. Pass 21 and you bust — the dealer's Attack ×1.25 comes out of your blood.` }));
+  bindTooltip(btnStand, () => ({ title: 'Stand (S)', body: 'End your turn and compare totals. Win, and you deal your total (plus Heat and bonuses) as damage — the number on the button is that winning damage.' }));
+  bindTooltip(btnDouble, () => ({ title: 'Double (D)', body: 'Draw exactly one card, then stand. The stakes double both ways: a win deals double damage, a loss costs double.' }));
+  bindTooltip(btnSplit, () => ({ title: 'Split (P)', body: 'Split a matched pair into two hands, each played and resolved on its own. One Double per split hand.' }));
+  bindTooltip(heatRow, () => ({ title: `Heat ${run.heat}/${run.heatCap()}`, body: `Each candle lit is +15% damage on winning hands (currently ×${(1 + 0.15 * run.heat).toFixed(2)}). A won hand lights one; a loss snuffs them all; a push keeps them burning.` }));
+  const atkEl = root.querySelector('.combatant.enemy .atk');
+  if (atkEl) bindTooltip(atkEl, () => ({ title: `Attack ${c.enemy.atk}`, body: 'The damage you take when the dealer wins a hand. Busting costs Attack ×1.25.' }));
+  const plaqueEl = root.querySelector('#enemy-plaque');
+  if (plaqueEl) bindTooltip(plaqueEl, () => ({ title: 'House rule', body: 'This dealer\'s table rule. It stays in force for the whole fight.', flavor: enemy.plaque }));
+  const shoeEl = root.querySelector('#shoe-count');
+  if (shoeEl) bindTooltip(shoeEl.parentElement, () => ({ title: 'The shoe', body: 'Cards left before the reshuffle. You and the dealer draw from this same deck — press V to view it.' }));
+
   const cardEls = new Map();
   let busy = true;
   let handActive = false;
@@ -222,8 +235,7 @@ export function renderFight(app, enemy) {
     let html = '';
     for (let i = 0; i < cap; i++) html += `<span class="flame ${i < h ? 'lit' : ''}"></span>`;
     heatRow.innerHTML = html;
-    heatRow.classList.toggle('hot', h >= 3);
-    heatRow.setAttribute('title', `Heat ${h} — damage ×${(1 + 0.15 * h).toFixed(2)}`);
+    heatRow.classList.toggle('hot', h >= 3); // hover/focus explanation via bindTooltip above
   }
 
   function updateTotals() {

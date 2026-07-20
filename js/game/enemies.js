@@ -626,8 +626,8 @@ export const ENEMIES = [
 
 export const BOSSES = {
   7: {
-    id: 'bouncer', name: 'THE BOUNCER', role: 'Keeper of the First Gate', tier: 'boss',
-    intro: "You're not on the list. You're in it.",
+    id: 'bouncer', name: 'MR. DORSEY', role: 'The Door of the Magnolia', tier: 'boss',
+    intro: "You're not on the list, Mr. Creel. You're in it.",
     voiceWin: ['That all?', 'Sit back down.'],
     voiceLose: ['...huh.'],
     plaque: "Hands won with total < 17 deal him NOTHING. Below 50% HP: his Attack +4.",
@@ -692,8 +692,8 @@ export const BOSSES = {
       { id: 'bou', glow: 'oklch(0.55 0.16 20)' }),
   },
   14: {
-    id: 'cardsharp', name: 'THE CARDSHARP', role: 'Master of the Vaults', tier: 'boss',
-    intro: 'I dealt your wedding, you know. Lovely hand. Shame how it played out.',
+    id: 'cardsharp', name: 'LEVI CREEL', role: 'The Cardsharp — Your Father', tier: 'boss',
+    intro: 'Hello, boy. They kept my hands. Sit down — I dealt your wedding. I can deal your wake.',
     voiceWin: ['Sleight of fate.', 'You never saw it.'],
     voiceLose: ['A rare misdeal.'],
     plaque: 'After your first action, he swaps one of your cards with the shoe. Double & lose → he heals the difference.',
@@ -750,7 +750,7 @@ export const BOSSES = {
       { id: 'shp', glow: 'oklch(0.5 0.12 305)' }),
   },
   21: {
-    id: 'house', name: 'THE HOUSE', role: 'The Thing in the Walls', tier: 'boss',
+    id: 'house', name: 'THE HOUSE', role: 'What Wears the Magnolia', tier: 'boss',
     intro: 'Sit. You\'ve come twenty floors to hear me say it: the Marker is real. Your signature is real. Nothing in this room is yours — including the chair.',
     voiceWin: ['The House always wins.', 'Sign here. In blood.'],
     voiceLose: ['...you cannot. You CANNOT.'],
